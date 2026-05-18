@@ -36,9 +36,6 @@ const isDev = import.meta.env.DEV
 
 const isLoading = ref(false)
 const isSubmitting = ref(false)
-const loginToken = ref('')
-const authToken = ref(sessionStorage.getItem('bookmark-cms-admin-token') ?? '')
-const authError = ref<string | null>(null)
 const globalMessage = ref<string | null>(null)
 const globalError = ref<string | null>(null)
 const formError = ref<FormError>({})
@@ -60,8 +57,6 @@ const editingBookmarkUrl = ref('')
 
 const draggingCategoryId = ref<string | null>(null)
 const draggingBookmark = ref<{ categoryId: string; bookmarkId: string } | null>(null)
-
-const hasAuth = computed(() => Boolean(authToken.value))
 
 const sortedCategories = computed(() =>
   [...categories.value].sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)),
@@ -113,10 +108,6 @@ const apiFetch = async <T,>(path: string, init?: RequestInit): Promise<T> => {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken.value && init?.method && init.method !== 'GET') {
-    headers.set('Authorization', `Bearer ${authToken.value}`)
-  }
-
   const response = await fetch(`${rootUrl}${path}`, { ...init, headers })
   if (!response.ok) {
     throw new Error(await parseErrorMessage(response))
@@ -145,26 +136,8 @@ const loadTree = async () => {
   }
 }
 
-const submitLogin = async () => {
-  clearMessages()
-  if (!loginToken.value.trim()) {
-    authError.value = 'トークンを入力してください。'
-    return
-  }
-  authToken.value = loginToken.value.trim()
-  sessionStorage.setItem('bookmark-cms-admin-token', authToken.value)
-  loginToken.value = ''
-  authError.value = null
-  await loadTree()
-}
-
 const logout = () => {
-  authToken.value = ''
-  sessionStorage.removeItem('bookmark-cms-admin-token')
-  categories.value = []
-  editingCategoryId.value = null
-  editingBookmarkId.value = null
-  clearMessages()
+  window.location.href = '/cdn-cgi/access/logout'
 }
 
 const createCategory = async () => {
@@ -398,27 +371,12 @@ const onBookmarkDrop = async (targetCategoryId: string, targetBookmarkId: string
   }
 }
 
-onMounted(async () => {
-  if (hasAuth.value) {
-    await loadTree()
-  }
-})
+onMounted(loadTree)
 </script>
 
 <template>
   <main class="cms-shell">
-    <section v-if="!hasAuth" class="auth-card">
-      <h1>Bookmark CMS ログイン</h1>
-      <p>管理トークンを入力すると編集機能を有効化します。</p>
-      <input v-model="loginToken" type="password" placeholder="ADMIN_TOKEN" @keyup.enter="submitLogin" />
-      <button type="button" @click="submitLogin">ログイン</button>
-      <p v-if="authError" class="error-text">{{ authError }}</p>
-      <p v-if="!rootUrl && !isDev" class="error-text">
-        ROOT_URL が .env に設定されていません。
-      </p>
-    </section>
-
-    <section v-else class="cms-card">
+    <section class="cms-card">
       <header class="cms-header">
         <h1>Bookmark CMS</h1>
         <div class="header-actions">
@@ -426,6 +384,10 @@ onMounted(async () => {
           <button type="button" class="danger" @click="logout">ログアウト</button>
         </div>
       </header>
+
+      <p v-if="!rootUrl && !isDev" class="error-text">
+        ROOT_URL が .env に設定されていません。
+      </p>
 
       <p v-if="globalMessage" class="success-text">{{ globalMessage }}</p>
       <p v-if="globalError" class="error-text">{{ globalError }}</p>
