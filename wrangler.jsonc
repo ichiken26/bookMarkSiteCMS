@@ -2,18 +2,11 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "bookmarksitecms",
   "compatibility_date": "2026-05-18",
-  "main": "./worker/index.ts",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  },
   "observability": {
     "enabled": true
-  },
-  "assets": {
-    "directory": "./dist/client",
-    "binding": "ASSETS",
-    "not_found_handling": "single-page-application",
-    "run_worker_first": true
-  },
-  "vars": {
-    "API_ORIGIN": "https://bookmarksiteapi.62ichiken.workers.dev"
-  },
-  "compatibility_flags": ["nodejs_compat"]
+  }
 }

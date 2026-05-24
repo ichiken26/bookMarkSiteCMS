@@ -32,6 +32,7 @@ type FormError = {
 }
 
 const rootUrl = (import.meta.env.VITE_ROOT_URL ?? import.meta.env.ROOT_URL ?? '').replace(/\/$/, '')
+const isDev = import.meta.env.DEV
 
 const isLoading = ref(false)
 const isSubmitting = ref(false)
@@ -98,6 +99,10 @@ const parseErrorMessage = async (response: Response) => {
 }
 
 const apiFetch = async <T,>(path: string, init?: RequestInit): Promise<T> => {
+  if (!rootUrl && !isDev) {
+    throw new Error('ROOT_URL が未設定です。')
+  }
+
   const headers = new Headers(init?.headers ?? {})
   if (init?.body != null) {
     headers.set('Content-Type', 'application/json')
@@ -379,6 +384,10 @@ onMounted(loadTree)
           <button type="button" class="danger" @click="logout">ログアウト</button>
         </div>
       </header>
+
+      <p v-if="!rootUrl && !isDev" class="error-text">
+        ROOT_URL が .env に設定されていません。
+      </p>
 
       <p v-if="globalMessage" class="success-text">{{ globalMessage }}</p>
       <p v-if="globalError" class="error-text">{{ globalError }}</p>
