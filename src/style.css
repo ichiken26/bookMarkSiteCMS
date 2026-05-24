@@ -17,6 +17,7 @@ body {
   padding: 24px;
 }
 
+.auth-card,
 .cms-card {
   width: min(1080px, 100%);
   margin: 0 auto;
