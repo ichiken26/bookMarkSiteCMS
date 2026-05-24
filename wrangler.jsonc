@@ -7,10 +7,10 @@
     "enabled": true
   },
   "assets": {
-    // vite build 後の静的ファイル（deploy:ci でも参照）
     "directory": "./dist/client",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": true
   },
   "vars": {
     "API_ORIGIN": "https://bookmarksiteapi.62ichiken.workers.dev"
