@@ -40,3 +40,9 @@ __screenshots__/
 
 .env
 .env.development
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
