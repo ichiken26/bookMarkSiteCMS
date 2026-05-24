@@ -7,6 +7,8 @@
     "enabled": true
   },
   "assets": {
+    // vite build 後の静的ファイル（deploy:ci でも参照）
+    "directory": "./dist/client",
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
