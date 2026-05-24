@@ -4,6 +4,8 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -13,7 +15,7 @@ export default defineConfig(({ mode }) => {
   )
 
   return {
-    plugins: [vue(), vueDevTools()],
+    plugins: [vue(), vueDevTools(), cloudflare()],
     envPrefix: ['VITE_', 'ROOT_URL'],
     resolve: {
       alias: {
@@ -30,5 +32,5 @@ export default defineConfig(({ mode }) => {
           }
         : undefined,
     },
-  }
+  };
 })
